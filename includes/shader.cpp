@@ -90,6 +90,11 @@ void Shader::setVec3(const std::string& name, float val1, float val2, float val3
     glUniform3f(glGetUniformLocation(ID, name.c_str()), val1, val2, val3);
 }
 
+//Set mat4 value
+void Shader::setMat4(const std::string &name, const glm::mat4 &mat) {
+   glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+}
+
 //Check the compile errors
 void Shader::checkCompileErrors(unsigned int shader, std::string type) {
     int success;
