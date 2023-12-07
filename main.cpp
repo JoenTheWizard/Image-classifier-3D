@@ -5,6 +5,7 @@
 
 #include "includes/shader.hpp"
 #include "includes/camera.hpp"
+#include "includes/cube.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -83,6 +84,9 @@ int main(int argc, char* argv[]) {
     //generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
     glBindVertexArray(0);
 
+    Cube cube(0.f,1.f,0.f);
+    Shader cube_shader("shader/cube.vert","shader/cube.frag");
+
     //-- Render loop --
     while (!glfwWindowShouldClose(window)) {
         //Calculate the delta for time and for each frame
@@ -107,12 +111,16 @@ int main(int argc, char* argv[]) {
         glm::mat4 view = camera.GetViewMatrix();
         shader.setMat4("view", view);
         //Model matrix
-        //glm::mat4 model = glm::mat4(1.0f); //Make sure to initialize matrix to identity matrix first
         glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0,0,0));
         shader.setMat4("model", model);
 
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        cube_shader.runShader();
+        cube_shader.setMat4("projection", projection);
+        cube_shader.setMat4("view", view);
+        cube.draw(cube_shader);
 
         //glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
