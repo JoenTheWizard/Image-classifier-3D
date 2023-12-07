@@ -24,8 +24,7 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float prevFrame = 0.0f;
 
-int main()
-{
+int main(int argc, char* argv[]) {
     //GLFW: initialize and configure
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -53,7 +52,7 @@ int main()
     glEnable(GL_DEPTH_TEST);
 
     //Build and compile our shader program
-    Shader ourShader("shader/triangle.vert", "shader/triangle.frag");
+    Shader shader("shader/triangle.vert", "shader/triangle.frag");
 
     //Set up vertex data (and buffer(s)) and configure vertex attributes
     float vertices[] = {
@@ -99,18 +98,18 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //Render the triangle
-        ourShader.runShader();
+        shader.runShader();
         //Set proj * view * model 
         //Pass projection matrix to shader (note that in this case it could change every frame)
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        ourShader.setMat4("projection", projection);
+        shader.setMat4("projection", projection);
         //Camera/view transformation
         glm::mat4 view = camera.GetViewMatrix();
-        ourShader.setMat4("view", view);
+        shader.setMat4("view", view);
         //Model matrix
         //glm::mat4 model = glm::mat4(1.0f); //Make sure to initialize matrix to identity matrix first
         glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0,0,0));
-        ourShader.setMat4("model", model);
+        shader.setMat4("model", model);
 
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
