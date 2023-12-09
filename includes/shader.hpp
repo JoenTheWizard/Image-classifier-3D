@@ -16,7 +16,7 @@ public:
     //Shader program ID
     unsigned int ID;
     //Shader requries fragment and vertex shader input
-    Shader(const char* vertexFilePath, const char* fragmentFilePath);
+    Shader(const char* vertexFilePath, const char* fragmentFilePath, const char* geometryFilePath = nullptr);
     //Use the shader
     void runShader();
     //These values are passed from the CPU to the GPU for the shader to execute

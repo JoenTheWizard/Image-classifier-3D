@@ -5,6 +5,8 @@ out vec4 FragColor;
 in vec3 Normals;
 in vec3 FragPos;
 
+uniform vec3 playerPos;
+
 void main() {
 
     //Object properties
@@ -13,8 +15,7 @@ void main() {
     vec3 objectColor = vec3(1.0, 0.5, 0.31);
 
     //Ambient lighting
-    float ambientStrength = 0.1;
-    vec3 ambient = ambientStrength * lightColor;
+    vec3 ambient = 0.1 * lightColor;
 
     //Diffusion lighting
     vec3 norm = normalize(Normals);
@@ -22,8 +23,26 @@ void main() {
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = diff * lightColor;
 
-    //Calculate total
-    vec3 result = (ambient + diffuse) * objectColor;
+    //Specular lighting
+    float specularStrength = 0.5;
+    vec3 viewDir = normalize(playerPos - FragPos);
+    vec3 reflectDir = reflect(-lightDir, norm);  
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+    vec3 specular = specularStrength * spec * lightColor;
+
+    //Calculate the distance between the fragment and the light source
+    float distance = length(lightPos - FragPos);
+
+    //Calculate the attenuation factor
+    //https://learnopengl.com/Lighting/Light-casters
+    float k_atten = 1.0 + 0.09 * distance + 0.032; 
+    float attenuation = 1.0 / (k_atten * (distance * distance));
+    ambient *= attenuation;
+    diffuse *= attenuation;
+    specular *= attenuation;
+
+    //Calculate total for Phong lighting
+    vec3 result = (ambient + diffuse + specular) * objectColor;
 
     FragColor = vec4(result,1);
 }

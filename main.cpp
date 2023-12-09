@@ -1,11 +1,11 @@
+#include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
-#include <iostream>
 
 #include "includes/shader.hpp"
 #include "includes/camera.hpp"
 #include "includes/cube.hpp"
+#include "includes/pyramid.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -66,9 +66,9 @@ int main(int argc, char* argv[]) {
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
+
     //Bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(VAO);
-
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
@@ -86,6 +86,7 @@ int main(int argc, char* argv[]) {
 
     Cube cube(0.f,1.f,0.f);
     Shader cube_shader("shader/cube.vert","shader/cube.frag");
+    Shader cube_shader_normals("shader/cube_normals.vert","shader/cube_normals.frag", "shader/cube_normals.geom");
 
     //-- Render loop --
     while (!glfwWindowShouldClose(window)) {
@@ -120,7 +121,15 @@ int main(int argc, char* argv[]) {
         cube_shader.runShader();
         cube_shader.setMat4("projection", projection);
         cube_shader.setMat4("view", view);
+        cube_shader.setVec3("playerPos", camera.Position.x, camera.Position.y, camera.Position.z);
         cube.draw(cube_shader);
+
+        //Normal vertices debug
+        cube_shader_normals.runShader();
+        cube_shader_normals.setMat4("projection", projection);
+        cube_shader_normals.setMat4("view", view);
+        cube_shader_normals.setMat4("model", glm::translate(glm::mat4(1.0), cube.getPosition()));
+        cube.draw(cube_shader_normals);
 
         //glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);

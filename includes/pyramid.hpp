@@ -1,5 +1,5 @@
-#ifndef CUBE_H
-#define CUBE_H
+#ifndef PYRAMID_H
+#define PYRAMID_H
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -7,10 +7,10 @@
 
 #include "shader.hpp"
 
-class Cube {
+class Pyramid {
 public:
-    Cube(float x, float y, float z); //Initialize cube position (scalar values) 
-    void draw(Shader& shader); //Draw cube with specified shader
+    Pyramid(float x, float y, float z); //Initialize pyramid position (scalar values) 
+    void draw(Shader& shader); //Draw pyramid with specified shader
     void clean();
     const glm::vec3& getPosition() const { return position; }
 private:
