@@ -24,6 +24,7 @@ public:
     void setBool(const std::string &name, bool value) const; //Set bool value
     void setInt(const std::string &name, int value) const; //Set int value
     void setFloat(const std::string &name, float value) const; //Set float value
+    void setVec3(const std::string &name, const glm::vec3 &value); //Set vec3 value (glm vec3) 
     void setVec3(const std::string &name, float val1, float val2, float val3); //Set vec3 value
     void setMat4(const std::string &name, const glm::mat4 &mat);
 private:
