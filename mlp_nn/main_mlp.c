@@ -3,13 +3,13 @@
 int
 main(int argc, char* argv[]) {
     //Initialize NN
-    unsigned int hidden_layer_nodes[] = {5, 3};
+    unsigned int hidden_layer_nodes[] = {200};
     MLP_NN nn = {
         .num_inputs = 784,
         .num_outputs = 2,
         .num_hidden = hidden_layer_nodes,
-        .learning_rate = 0.1,
-        .epoch = 30000,
+        .learning_rate = 0.05,
+        .epoch = 10000,
         //Initialize neurons and weights to NULL
         .neurons = NULL, .weights = NULL
     };
@@ -36,7 +36,7 @@ main(int argc, char* argv[]) {
 
         //Print the MLP model after initializing the weights and calculating the initial neurons
         //Note: This function assumes that the weights and neurons are set
-        print_mlp_nn(&nn, sz);
+        //print_mlp_nn(&nn, sz);
 
         //Train the model, will update the weights
         train_mlp_model(&nn, &input_nodes, &output_nodes, sz);
@@ -44,11 +44,23 @@ main(int argc, char* argv[]) {
         //Forward propagate to test the inputs on the newly trained model
         forward_propagate(&nn, inputs, sz);
 
+        //FORWARD PROPAGATE TEST AFTER TRAIN
         Matrix* inputs1 = get_row_matrix(&input_nodes, 1);
         forward_propagate(&nn, inputs1, sz);
-
         free_matrix(inputs1);
         free(inputs1);
+
+        Matrix* inputs2 = get_row_matrix(&input_nodes, 122);
+        forward_propagate(&nn, inputs2, sz);
+        free_matrix(inputs2);
+        free(inputs2);
+
+        Matrix input_test, output_test;
+        read_dataset("../dataset/test.data", nn.num_inputs, nn.num_outputs, &input_test, &output_test);
+        forward_propagate(&nn, &input_test, sz);
+        free_matrix(&input_test);
+        free_matrix(&output_test);
+
         //Free memory
         free_matrix(inputs);
         //free_matrix(outputs);

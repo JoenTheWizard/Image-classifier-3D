@@ -92,10 +92,10 @@ read_dataset(const char* file_path, unsigned int num_inputs, unsigned int num_ou
     }
 
     //Print the matricies
-    printf("== INPUT MATRIX ==\n");
-    print_matrix(input_nodes);
-    printf("== OUTPUT MATRIX ==\n");
-    print_matrix(output_nodes);
+    // printf("== INPUT MATRIX ==\n");
+    // print_matrix(input_nodes);
+    // printf("== OUTPUT MATRIX ==\n");
+    // print_matrix(output_nodes);
 
     //Close file buffer and free other memory
     fclose(file);
@@ -133,7 +133,7 @@ initialize_rand_weights(MLP_NN* mlp, size_t num_of_hidden_layers) {
 
     //Initialize the random weights for the passed in model (will set for the 'weights' paramter)
     srand(time(NULL));
-    printf("===== INITIALIZE RANDOM WEIGHTS =====\n");
+    //printf("===== INITIALIZE RANDOM WEIGHTS =====\n");
     int num_weights = size_of_mlp_model - 1;
     mlp->weights = (Matrix*)malloc(num_weights * sizeof(Matrix));
 
@@ -141,8 +141,8 @@ initialize_rand_weights(MLP_NN* mlp, size_t num_of_hidden_layers) {
         init_matrix(&mlp->weights[i], layers[i], layers[i+1]);
         set_rand_weights(&mlp->weights[i]);
         //Print the matricies
-        print_matrix(&mlp->weights[i]);
-        printf("\n\n\n");
+        // print_matrix(&mlp->weights[i]);
+        // printf("\n\n\n");
     }
 
     //Free unused memory
@@ -164,8 +164,8 @@ init_mlp_model(MLP_NN* mlp, Matrix* inputs_neurons, size_t num_of_hidden_layers)
     copy_matrix(&mlp->neurons[0], &input);
 
     //Loop calculate nodes for forward propagation
-    printf("===== INITIALIZE NEURONS (FORWARD PROPAGATION) =====\n");
-    print_matrix(&mlp->neurons[0]);
+    // printf("===== INITIALIZE NEURONS (FORWARD PROPAGATION) =====\n");
+    // print_matrix(&mlp->neurons[0]);
     for (int i = 0; i < num_of_hidden_layers; i++) {
         Matrix res;
         //Solve for the dot product of the net input, iterate for each weights on each layer
@@ -175,7 +175,7 @@ init_mlp_model(MLP_NN* mlp, Matrix* inputs_neurons, size_t num_of_hidden_layers)
         //Pass the activation function, sigmoid
         sigmoid(&input);
         //Print the matrix
-        print_matrix(&input);
+        //print_matrix(&input);
         //Store the result into nodes matrix array
         init_matrix(&mlp->neurons[i+1], input.rows, input.columns);
         copy_matrix(&mlp->neurons[i+1], &input);
@@ -211,6 +211,7 @@ forward_propagate(MLP_NN* mlp, Matrix* inputs_neurons, size_t num_of_hidden_laye
     Matrix input;
     init_matrix(&input, inputs_neurons->rows, inputs_neurons->columns);
     copy_matrix(&input, inputs_neurons);
+    printf("Neurons 0\n");
     print_matrix(&input);
     for (int i = 0; i < num_of_hidden_layers; i++) {
         Matrix res;
@@ -221,6 +222,7 @@ forward_propagate(MLP_NN* mlp, Matrix* inputs_neurons, size_t num_of_hidden_laye
         //Pass the activation function, sigmoid
         sigmoid(&input);
         //Print the output of the activation matrix
+        printf("\nNeurons %i\n", i + 1);
         print_matrix(&input);
         //Store the result into nodes matrix array
         free_matrix(&mlp->neurons[i+1]);
@@ -238,6 +240,7 @@ forward_propagate(MLP_NN* mlp, Matrix* inputs_neurons, size_t num_of_hidden_laye
 void
 train_mlp_model(MLP_NN* mlp, Matrix* inputs_neurons_dataset, Matrix* outputs_neurons_dataset, size_t num_of_hidden_layers) {
     for (int e = 0; e < mlp->epoch; e++) {
+        printf("Epoch %i\n", e);
         Matrix error;
         Matrix old_weights;
         init_matrix(&old_weights, mlp->weights[num_of_hidden_layers - 1].rows, mlp->weights[num_of_hidden_layers - 1].columns);
@@ -274,19 +277,19 @@ train_mlp_model(MLP_NN* mlp, Matrix* inputs_neurons_dataset, Matrix* outputs_neu
             //Calculate error from the predicted output
             if (i == num_of_hidden_layers) {
                 subtract_matrix(&mlp->neurons[i], outputs, &error);
-                printf("== Error ==\n");
-                print_matrix(&error);
+                //printf("== Error ==\n");
+                //print_matrix(&error);
             }
             //Calculate error for the hidden layers
             else {
-                printf("\n= Hidden Layer Error =\n");
+                //printf("\n= Hidden Layer Error =\n");
                 Matrix error_h;
                 Matrix transpose_weights;
                 transpose_matrix(&old_weights, &transpose_weights);
 
                 //Multiply and print resulting errors
                 dot_product(&error, &transpose_weights, &error_h);
-                print_matrix(&error_h);
+                //print_matrix(&error_h);
 
                 //Copy error_h to error for later use in backward pass
                 copy_matrix(&error, &error_h);
@@ -299,7 +302,7 @@ train_mlp_model(MLP_NN* mlp, Matrix* inputs_neurons_dataset, Matrix* outputs_neu
             //In the backward pass we calculate the derivative of the cost function in respect to
             //the weights.
             //Derivative sigmoid (error * sigmoid(x) * (1 - sigmoid(x)) * output_prev_layer)
-            printf("== Sigmoid Derivative ==\n");
+            //printf("== Sigmoid Derivative ==\n");
             Matrix sig_derivative;
             init_matrix(&sig_derivative, mlp->neurons[i].rows, mlp->neurons[i].columns);
             for (int j = 0; j < mlp->neurons[i].rows; j++) {
@@ -308,10 +311,10 @@ train_mlp_model(MLP_NN* mlp, Matrix* inputs_neurons_dataset, Matrix* outputs_neu
                     sig_derivative.data[j][k] = error.data[j][k] * x * (1 - x);
                 }
             }
-            print_matrix(&sig_derivative);
+            //print_matrix(&sig_derivative);
 
             //Multiply the previous layer nodes with the sigmoid derivative matrix
-            printf("== Delta Weights ==\n");
+            //printf("== Delta Weights ==\n");
             Matrix delta_weights;
             Matrix transpose_nodes;
             transpose_matrix(&mlp->neurons[i-1], &transpose_nodes);
@@ -323,19 +326,19 @@ train_mlp_model(MLP_NN* mlp, Matrix* inputs_neurons_dataset, Matrix* outputs_neu
                 for (int k = 0; k < delta_weights.columns; k++)
                     delta_weights.data[j][k] *= mlp->learning_rate;
             }
-            print_matrix(&delta_weights);
+            //print_matrix(&delta_weights);
 
             //Store old weights before updating
             copy_matrix(&old_weights, &mlp->weights[i-1]);
 
             //Print the new weights
-            printf("= Resulting Weights =\n");
+            //printf("= Resulting Weights =\n");
             //Apply the delta weights to the model weights by negating it
             for (int j = 0; j < mlp->weights[i-1].rows; j++) {
                 for (int k = 0; k < mlp->weights[i-1].columns; k++)
                     mlp->weights[i-1].data[j][k] -= delta_weights.data[j][k];
             }
-            print_matrix(&mlp->weights[i-1]);
+            //print_matrix(&mlp->weights[i-1]);
 
             //Free local scope memory
             free_matrix(&transpose_nodes);
@@ -343,7 +346,7 @@ train_mlp_model(MLP_NN* mlp, Matrix* inputs_neurons_dataset, Matrix* outputs_neu
             free_matrix(&sig_derivative);
         }
         
-        print_mlp_nn(mlp, num_of_hidden_layers);
+        //print_mlp_nn(mlp, num_of_hidden_layers);
 
         //Free other unnecessary memory
         free_matrix(&error);
