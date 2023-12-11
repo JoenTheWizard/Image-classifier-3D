@@ -5,7 +5,7 @@ main(int argc, char* argv[]) {
     //Initialize NN
     unsigned int hidden_layer_nodes[] = {5, 3};
     MLP_NN nn = {
-        .num_inputs = 4900,
+        .num_inputs = 784,
         .num_outputs = 2,
         .num_hidden = hidden_layer_nodes,
         .learning_rate = 0.1,
