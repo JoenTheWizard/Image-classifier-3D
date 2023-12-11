@@ -239,8 +239,9 @@ forward_propagate(MLP_NN* mlp, Matrix* inputs_neurons, size_t num_of_hidden_laye
 //of the passed in MLP.
 void
 train_mlp_model(MLP_NN* mlp, Matrix* inputs_neurons_dataset, Matrix* outputs_neurons_dataset, size_t num_of_hidden_layers) {
+    printf("\n");
     for (int e = 0; e < mlp->epoch; e++) {
-        printf("Epoch %i\n", e);
+        printf("\033[A\33[2KT\rEpoch %i\n", e);
         Matrix error;
         Matrix old_weights;
         init_matrix(&old_weights, mlp->weights[num_of_hidden_layers - 1].rows, mlp->weights[num_of_hidden_layers - 1].columns);
