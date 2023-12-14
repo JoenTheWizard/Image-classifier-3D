@@ -360,6 +360,32 @@ train_mlp_model(MLP_NN* mlp, Matrix* inputs_neurons_dataset, Matrix* outputs_neu
     }
 }
 
+//Save the weights into a file
+void
+save_mlp_weights(MLP_NN* mlp, const char* file_path, size_t num_of_hidden_layers) {
+    FILE* file = fopen(file_path, "w");
+    if (file == NULL) {
+        fprintf(stderr, "ERROR: Cannot write to file %s\n", file_path);
+    }
+
+    printf("\nSAVING WEIGHTS\n");
+    for (int i = 0; i < num_of_hidden_layers; i++) {
+        printf("Weights %d:\n", i);
+        print_matrix(&mlp->weights[i]);
+
+        for (int j = 0; j < mlp->weights[i].rows; j++) {
+            for (int k = 0; k < mlp->weights[i].columns; k++) {
+                fprintf(file, "%f", mlp->weights[i].data[j][k]);
+                if (k < mlp->weights[i].columns - 1) fprintf(file, ",");
+            }
+            fprintf(file, ";");
+        }
+        if (i < num_of_hidden_layers - 1) fprintf(file, "\n");
+    }
+
+    fclose(file);
+}
+
 //Will deallocate the matrix arrays and set to NULL
 void free_mat_array(Matrix** weights, int num_weights) {
    // Free the weights

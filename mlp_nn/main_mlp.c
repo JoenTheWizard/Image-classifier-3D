@@ -61,6 +61,9 @@ main(int argc, char* argv[]) {
         free_matrix(&input_test);
         free_matrix(&output_test);
 
+        //Save all the weights into a file to be able to reuse the trained weights
+        save_mlp_weights(&nn, "weights.data", sz);
+
         //Free memory
         free_matrix(inputs);
         //free_matrix(outputs);

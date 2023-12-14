@@ -42,6 +42,9 @@ void forward_propagate(MLP_NN* mlp, Matrix* inputs_neurons, size_t num_of_hidden
 //Train the MLP model (backward and forward propgation)
 void train_mlp_model(MLP_NN* mlp, Matrix* inputs_neurons_dataset, Matrix* outputs_neurons_dataset, size_t num_of_hidden_layers);
 
+//Save the weights into a file
+void save_mlp_weights(MLP_NN* mlp, const char* file_path, size_t num_of_hidden_layers);
+
 //Will deallocate the matrix arrays and set to NULL
 void free_mat_array(Matrix** weights, int num_weights);
 
