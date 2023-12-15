@@ -45,6 +45,9 @@ void train_mlp_model(MLP_NN* mlp, Matrix* inputs_neurons_dataset, Matrix* output
 //Save the weights into a file
 void save_mlp_weights(MLP_NN* mlp, const char* file_path, size_t num_of_hidden_layers);
 
+//Load the weights from a file
+size_t load_mlp_weights(MLP_NN* mlp, const char* file_path, size_t num_of_hidden_layers);
+
 //Will deallocate the matrix arrays and set to NULL
 void free_mat_array(Matrix** weights, int num_weights);
 

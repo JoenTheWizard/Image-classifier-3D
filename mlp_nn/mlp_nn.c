@@ -380,6 +380,46 @@ save_mlp_weights(MLP_NN* mlp, const char* file_path, size_t num_of_hidden_layers
     fclose(file);
 }
 
+//Load the weights froma file
+size_t
+load_mlp_weights(MLP_NN* mlp, const char* file_path, size_t num_of_hidden_layers) {
+    //Construct number of nodes on each layer and store into array
+    int size_of_mlp_model = num_of_hidden_layers + 2;
+    int* layers = (int*)malloc(size_of_mlp_model * sizeof(int));
+
+    layers[0] = mlp->num_inputs;
+    for (int i = 0; i < num_of_hidden_layers; i++) {
+        layers[i + 1] = mlp->num_hidden[i];
+    }
+    layers[size_of_mlp_model - 1] = mlp->num_outputs;
+
+    int num_weights = size_of_mlp_model - 1;
+    mlp->weights = (Matrix*)malloc(num_weights * sizeof(Matrix));
+
+    //READ FROM FILE
+    FILE* file = fopen(file_path, "rb");
+    if (file == NULL) {
+        fprintf(stderr, "ERROR: Cannot read from file %s\n", file_path);
+    }
+
+    printf("\nLOADING WEIGHTS\n");
+
+    for (int layer = 0; layer < num_weights; layer++) {
+        init_matrix(&mlp->weights[layer], layers[layer], layers[layer+1]);
+
+        for (int i = 0; i < mlp->weights[layer].rows; i++)
+            fread(mlp->weights[layer].data[i], sizeof(double), mlp->weights[layer].columns, file);
+        
+        printf("Weights %i\n", layer);
+        print_matrix(&mlp->weights[layer]);
+    }
+
+    free(layers);
+    fclose(file);
+
+    return num_weights;
+}
+
 //Will deallocate the matrix arrays and set to NULL
 void free_mat_array(Matrix** weights, int num_weights) {
    // Free the weights
