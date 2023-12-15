@@ -369,18 +369,12 @@ save_mlp_weights(MLP_NN* mlp, const char* file_path, size_t num_of_hidden_layers
     }
 
     printf("\nSAVING WEIGHTS\n");
-    for (int i = 0; i < num_of_hidden_layers; i++) {
-        printf("Weights %d:\n", i);
-        print_matrix(&mlp->weights[i]);
+    for (int layer = 0; layer < num_of_hidden_layers; layer++) {
+        for (int i = 0; i < mlp->weights[layer].rows; i++)
+            fwrite(mlp->weights[layer].data[i], sizeof(double), mlp->weights[layer].columns, file);
 
-        for (int j = 0; j < mlp->weights[i].rows; j++) {
-            for (int k = 0; k < mlp->weights[i].columns; k++) {
-                fprintf(file, "%f", mlp->weights[i].data[j][k]);
-                if (k < mlp->weights[i].columns - 1) fprintf(file, ",");
-            }
-            fprintf(file, ";");
-        }
-        if (i < num_of_hidden_layers - 1) fprintf(file, "\n");
+        printf("Weights %i\n", layer);
+        print_matrix(&mlp->weights[layer]);
     }
 
     fclose(file);
