@@ -6,7 +6,7 @@
 #include "includes/camera.hpp"
 #include "includes/cube.hpp"
 #include "includes/pyramid.hpp"
-#include "includes/flatten_img.hpp"
+#include "includes/image_classifier.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);

@@ -1,5 +1,5 @@
-#ifndef FLATTEN_IMG 
-#define FLATTEN_IMG
+#ifndef IMG_CLASSIFIER 
+#define IMG_CLASSIFIER
 
 #include <iostream>
 extern "C" {
