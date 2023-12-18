@@ -23,7 +23,7 @@ void set_rand_weights(Matrix* mat) {
 void dot_product(Matrix* mat1, Matrix* mat2, Matrix* result) {
     //# of cols of mat1 == # of rows of mat2
     if (mat1->columns != mat2->rows) {
-        printf("ERROR: Number of columns (mat1) is not the same as number of rows (mat2)");
+        printf("ERROR: Number of columns (mat1) is not the same as number of rows (mat2)\n");
         return;
     }
 
