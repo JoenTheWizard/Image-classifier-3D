@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <filesystem>
+#include <vector>
 #include "../mlp_nn/mlp_nn.h"
 
 enum ColourChannel { RED = 0, GREEN = 1, BLUE = 2 };
@@ -25,6 +26,8 @@ public:
     void forward_propagate_img(const char* imagePath);
     //Will flatten the grayscaled image by reading the specified colour channel values and return Matrix
     static void flatten_img_data(const char* filePath, Matrix* result, ColourChannel channel = RED);
+    //Create data set from directories that contain the images
+    static void create_dataset_from_dir(const char* datasetPath, const std::vector<std::string>& directories);
 private:
     //We need to know the size of the network (total_layers = layer_neurons + layer_weights)
     //Num of weight layers = num of hidden layers + 1

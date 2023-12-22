@@ -140,6 +140,63 @@ void ImageClassifier::flatten_img_data(const char* filePath, Matrix* result, Col
     stbi_image_free(imgData);
 }
 
+void ImageClassifier::create_dataset_from_dir(const char* datasetPath, const std::vector<std::string>& directories) {
+    // Write to data file
+    std::ofstream dataFile;
+    dataFile.open(datasetPath);
+
+    // Iterate through files in the specified directories
+    int i = 0;
+    for (const auto& directory : directories) {
+        if (std::filesystem::exists(directory) && std::filesystem::is_directory(directory)) {
+            for (const auto& entry : std::filesystem::directory_iterator(directory)) {
+                std::string filename = entry.path();
+                int x,y,n;
+                unsigned char* data = stbi_load(filename.c_str(), &x, &y, &n, 0);
+                // Process data if not NULL
+                if (data != nullptr && x > 0 && y > 0) {
+                    if (n == 3) {
+                        for (int i = 0; i < x * y; i++) {
+                            // Access the R component of the pixel
+                            unsigned char r = data[i * n + 0];
+                            float r_scaled = r / 255.0f;
+                            // Will cast the results to int
+                            dataFile << r_scaled;
+                            // Print a new line at the end of each row
+                            // dataFile << ((i % x == x - 1) ? '\n' : ' ');
+                            dataFile << ",";
+                        }
+                        // Output vectors
+                        std::string delim = "";
+                        for (const auto& directory : directories) {
+                            dataFile << delim << ((directory == directories[i]) ? "1" : "0");
+                            delim = ",";
+                        }
+                        dataFile << '\n';
+                    }
+                    else if (n == 4) { //RGBA data channel (ignore)
+                        std::cout << "First pixel: RGBA "
+                                    << static_cast<int>(data[0]) << " "
+                                    << static_cast<int>(data[1]) << " "
+                                    << static_cast<int>(data[2]) << " "
+                                    << static_cast<int>(data[3]) << '\n';
+                    }
+                }
+                else {
+                    std::cout << "Some error\n";
+                }
+
+                // Free image data
+                stbi_image_free(data);
+            }
+        }
+        i++;
+    }
+
+    // Close data file
+    dataFile.close();
+}
+
 ImageClassifier::~ImageClassifier() {
     printf("Dellaocating\n");
     size_t num_weight_layers = num_of_hidden_layers + 1;
