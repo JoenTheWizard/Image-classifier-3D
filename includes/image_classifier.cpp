@@ -147,6 +147,7 @@ void ImageClassifier::create_dataset_from_dir(const char* datasetPath, const std
 
     // Iterate through files in the specified directories
     int i = 0;
+    std::string nl = "";
     for (const auto& directory : directories) {
         if (std::filesystem::exists(directory) && std::filesystem::is_directory(directory)) {
             for (const auto& entry : std::filesystem::directory_iterator(directory)) {
@@ -156,6 +157,7 @@ void ImageClassifier::create_dataset_from_dir(const char* datasetPath, const std
                 // Process data if not NULL
                 if (data != nullptr && x > 0 && y > 0) {
                     if (n == 3) {
+                        dataFile << nl;
                         for (int i = 0; i < x * y; i++) {
                             // Access the R component of the pixel
                             unsigned char r = data[i * n + 0];
@@ -172,7 +174,7 @@ void ImageClassifier::create_dataset_from_dir(const char* datasetPath, const std
                             dataFile << delim << ((directory == directories[i]) ? "1" : "0");
                             delim = ",";
                         }
-                        dataFile << '\n';
+                        nl = "\n";
                     }
                 }
                 else {
@@ -203,6 +205,7 @@ void ImageClassifier::append_img_to_dataset(const char* datasetPath, const char*
     //Process data if not NULL ..
     if (data != nullptr && x > 0 && y > 0) {
             if (n == 3) {
+                dataFile << '\n';
                 for (int i = 0; i < x * y; i++) {
                     //Access the R component of the pixel
                     unsigned char r = data[i * n + 0];
@@ -218,7 +221,6 @@ void ImageClassifier::append_img_to_dataset(const char* datasetPath, const char*
                     dataFile << delim << ((i == outputIndex) ? "1" : "0");
                     delim = ",";
                 }
-                dataFile << '\n';
         }
     }
     else {
