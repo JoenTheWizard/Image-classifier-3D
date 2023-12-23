@@ -174,13 +174,6 @@ void ImageClassifier::create_dataset_from_dir(const char* datasetPath, const std
                         }
                         dataFile << '\n';
                     }
-                    else if (n == 4) { //RGBA data channel (ignore)
-                        std::cout << "First pixel: RGBA "
-                                    << static_cast<int>(data[0]) << " "
-                                    << static_cast<int>(data[1]) << " "
-                                    << static_cast<int>(data[2]) << " "
-                                    << static_cast<int>(data[3]) << '\n';
-                    }
                 }
                 else {
                     std::cout << "Some error\n";
@@ -195,6 +188,45 @@ void ImageClassifier::create_dataset_from_dir(const char* datasetPath, const std
 
     // Close data file
     dataFile.close();
+}
+
+void ImageClassifier::append_img_to_dataset(const char* datasetPath, const char* imagePath, const std::vector<std::string>& directories, int outputIndex) {
+    //Write to data file
+    std::ofstream dataFile(datasetPath, std::ios::app);
+
+    // x = width, y = height, n = # 8-bit components per pixel ...
+    // replace '0' with '1'..'4' to force that many components per pixel
+    // but 'n' will always be the number that it would have been if you said 0
+    int x,y,n;
+    unsigned char* data = stbi_load(imagePath, &x, &y, &n, 0);
+   
+    //Process data if not NULL ..
+    if (data != nullptr && x > 0 && y > 0) {
+            if (n == 3) {
+                for (int i = 0; i < x * y; i++) {
+                    //Access the R component of the pixel
+                    unsigned char r = data[i * n + 0];
+                    float r_scaled = r / 255.0f;
+                    //Will cast the results to int
+                    dataFile << r_scaled;
+                    //Comma delimiter
+                    dataFile << ",";
+                }
+                // Output vectors
+                std::string delim = "";
+                for (size_t i = 0; i < directories.size(); i++) {
+                    dataFile << delim << ((i == outputIndex) ? "1" : "0");
+                    delim = ",";
+                }
+                dataFile << '\n';
+        }
+    }
+    else {
+        std::cout << "Some error\n";
+    }
+
+    dataFile.close();
+    stbi_image_free(data);
 }
 
 ImageClassifier::~ImageClassifier() {
