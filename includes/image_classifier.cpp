@@ -231,6 +231,21 @@ void ImageClassifier::append_img_to_dataset(const char* datasetPath, const char*
     stbi_image_free(data);
 }
 
+size_t ImageClassifier::classify_max_column_index() {
+    if (neural_network.neurons == NULL) {
+        return -1;
+    }
+
+    Matrix result_mat = neural_network.neurons[num_of_hidden_layers + 1];
+    size_t maxIndex = 0;
+    for (int i = 0; i < result_mat.columns; i++) {
+        if (result_mat.data[0][i] > result_mat.data[0][maxIndex])
+            maxIndex = i;
+    }
+
+    return maxIndex;
+}
+
 ImageClassifier::~ImageClassifier() {
     printf("Dellaocating\n");
     size_t num_weight_layers = num_of_hidden_layers + 1;

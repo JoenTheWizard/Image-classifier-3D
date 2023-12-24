@@ -29,6 +29,8 @@ public:
     //Create data set from directories that contain the images
     static void create_dataset_from_dir(const char* datasetPath, const std::vector<std::string>& directories);
     static void append_img_to_dataset(const char* datasetPath, const char* imagePath, const std::vector<std::string>& directories, int outputIndex);
+    //Get maximum output value from the neurons (Returns the index of the column, will only read the first row as the output layer is expected to only have one row)
+    size_t classify_max_column_index();
 private:
     //We need to know the size of the network (total_layers = layer_neurons + layer_weights)
     //Num of weight layers = num of hidden layers + 1
