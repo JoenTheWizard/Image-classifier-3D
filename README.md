@@ -4,6 +4,8 @@
 - Pass in arguments in CLI
 - Extra error checking in the `ImageClassifier` class
 - Make base class for `Pyramid` and `Cube` (optional)
+- Set some getters and setters in `ImageClassifier` class
+- Set uniform buffer objects for the object shaders
 
 # Sources
 - [300 images of squares, circles, and triangles](https://www.kaggle.com/datasets/cactus3/basicshapes/)
