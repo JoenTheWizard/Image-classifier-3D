@@ -2,20 +2,15 @@
 #define CUBE_H
 
 #include <glad/glad.h>
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "shader.hpp"
+#include "shapes.hpp"
 
-class Cube {
+class Cube : public Shape {
 public:
     Cube(float x, float y, float z); //Initialize cube position (scalar values) 
-    void draw(Shader& shader); //Draw cube with specified shader
-    void clean();
-    const glm::vec3& getPosition() const { return position; }
-private:
-    unsigned int VAO, VBO;
-    glm::vec3 position;
+    void draw(Shader& shader) override; //Draw cube with specified shader
+    void clean() override;
 };
 
 #endif

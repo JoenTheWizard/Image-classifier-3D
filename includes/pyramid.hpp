@@ -2,20 +2,15 @@
 #define PYRAMID_H
 
 #include <glad/glad.h>
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "shader.hpp"
+#include "shapes.hpp"
 
-class Pyramid {
+class Pyramid : public Shape {
 public:
     Pyramid(float x, float y, float z); //Initialize pyramid position (scalar values) 
-    void draw(Shader& shader); //Draw pyramid with specified shader
-    void clean();
-    const glm::vec3& getPosition() const { return position; }
-private:
-    unsigned int VAO, VBO;
-    glm::vec3 position;
+    void draw(Shader& shader) override; //Draw pyramid with specified shader
+    void clean() override;
 };
 
 #endif
