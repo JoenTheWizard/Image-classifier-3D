@@ -11,6 +11,7 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+int parse_arguments(int argc, char* argv[], ImageClassifier* img_classifier);
 
 //Settings
 const unsigned int SCR_WIDTH = 1200;
@@ -197,4 +198,27 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
     lastY = ypos;
 
     camera.ProcessMouseMovement(xoffset, yoffset);
+}
+
+//This function will need further improvements (current implementation is temporary for now)
+int parse_arguments(int argc, char* argv[], ImageClassifier* img_classifier) {
+    if (argc < 2) {
+        std::cerr << "Usage: " << argv[0] << " [options...] <input-file>\n";
+        return -1;
+    }
+
+    if (!strcmp(argv[1] , "-lw")) {
+        if (argc < 3) {
+            std::cerr << "'-lw' requires argument file name\n";
+            return -1;
+        }
+        if (argc < 4) {
+            std::cerr << "Error: Please pass in an image to pass into the classifier...\n";
+            return -1;
+        }
+        img_classifier->load_weights(argv[2]);
+        img_classifier->forward_propagate_img(argv[3]);
+    }
+
+    return 0;
 }
