@@ -85,7 +85,8 @@ int main(int argc, char* argv[]) {
     //generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
     glBindVertexArray(0);
 
-    Cube cube(0.f,1.f,0.f);
+    Shape* cube = new Cube(0.f,1.f,0.f);
+    Shape* pyramid = new Pyramid(0.f,2.f,0.5f);
     Shader cube_shader("shader/cube.vert","shader/cube.frag");
     Shader cube_shader_normals("shader/cube_normals.vert","shader/cube_normals.frag", "shader/cube_normals.geom");
 
@@ -123,14 +124,16 @@ int main(int argc, char* argv[]) {
         cube_shader.setMat4("projection", projection);
         cube_shader.setMat4("view", view);
         cube_shader.setVec3("playerPos", camera.Position.x, camera.Position.y, camera.Position.z);
-        cube.draw(cube_shader);
+        cube->draw(cube_shader);
+
+        pyramid->draw(cube_shader);
 
         //Normal vertices debug
         cube_shader_normals.runShader();
         cube_shader_normals.setMat4("projection", projection);
         cube_shader_normals.setMat4("view", view);
-        cube_shader_normals.setMat4("model", glm::translate(glm::mat4(1.0), cube.getPosition()));
-        cube.draw(cube_shader_normals);
+        cube_shader_normals.setMat4("model", glm::translate(glm::mat4(1.0), cube->getPosition()));
+        cube->draw(cube_shader_normals);
 
         //glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
@@ -143,6 +146,9 @@ int main(int argc, char* argv[]) {
 
     //GLFW: terminate, clearing all previously allocated GLFW resources.
     glfwTerminate();
+
+    delete cube;
+    delete pyramid;
     return 0;
 }
 

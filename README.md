@@ -3,9 +3,9 @@
 - Add a header in the weights file to check if the amount of neurons is corresponding to the loaded neural network
 - Pass in arguments in CLI
 - Extra error checking in the `ImageClassifier` class
-- Make base class for `Pyramid` and `Cube` (optional)
+- ~~Make base class for `Pyramid` and `Cube` (optional)~~
 - Set some getters and setters in `ImageClassifier` class
-- Set uniform buffer objects for the object shaders
+- Set uniform buffer objects for the object shaders (optional)
 
 # Sources
 - [300 images of squares, circles, and triangles](https://www.kaggle.com/datasets/cactus3/basicshapes/)
