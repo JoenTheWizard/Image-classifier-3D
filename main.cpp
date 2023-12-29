@@ -39,6 +39,10 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
+    //Obtain the maximum value obtained from propagated network. 
+    //Remember the output neurons should always have 1 row
+    size_t output_neurons_max_index = img.classify_max_column_index();
+
     //GLFW: initialize and configure
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -65,42 +69,19 @@ int main(int argc, char* argv[]) {
     //Depth test enable
     glEnable(GL_DEPTH_TEST);
 
+    //Initialize object list for classification. The index will be chosen from the neural network
+    std::vector<Shape*> shapes;
+    shapes.push_back(new Cube(0.f,0.f,0.f));
+    shapes.push_back(new Pyramid(0.f,0.f,0.5f));
+
     //Build and compile our shader program
-    Shader shader("shader/triangle.vert", "shader/triangle.frag");
-
-    //Set up vertex data (and buffer(s)) and configure vertex attributes
-    float vertices[] = {
-        //Positions (X,Y,Z)  //Colors (R,G,B)
-         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  //Bottom right
-        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  //Bottom left
-         0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f   //Top 
-    };
-
-    unsigned int VBO, VAO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-
-    //Bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    //Position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    //Color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    Shader cube_shader("shader/cube.vert","shader/cube.frag");
+    Shader cube_shader_normals("shader/cube_normals.vert","shader/cube_normals.frag", "shader/cube_normals.geom");
 
     //You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, 
     //but this rarely happens. Modifying other VAOs requires a call to glBindVertexArray anyways so we
     //generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
     glBindVertexArray(0);
-
-    Shape* cube = new Cube(0.f,1.f,0.f);
-    Shape* pyramid = new Pyramid(0.f,2.f,0.5f);
-    Shader cube_shader("shader/cube.vert","shader/cube.frag");
-    Shader cube_shader_normals("shader/cube_normals.vert","shader/cube_normals.frag", "shader/cube_normals.geom");
 
     //-- Render loop --
     while (!glfwWindowShouldClose(window)) {
@@ -116,51 +97,36 @@ int main(int argc, char* argv[]) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //Render the triangle
-        shader.runShader();
-        //Set proj * view * model 
-        //Pass projection matrix to shader (note that in this case it could change every frame)
+        //Set the projection and view matricies
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        shader.setMat4("projection", projection);
-        //Camera/view transformation
         glm::mat4 view = camera.GetViewMatrix();
-        shader.setMat4("view", view);
-        //Model matrix
-        glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0,0,0));
-        shader.setMat4("model", model);
 
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-
+        //Render the object depending on the classification from the neural network
         cube_shader.runShader();
         cube_shader.setMat4("projection", projection);
         cube_shader.setMat4("view", view);
         cube_shader.setVec3("playerPos", camera.Position.x, camera.Position.y, camera.Position.z);
-        cube->draw(cube_shader);
-
-        pyramid->draw(cube_shader);
+        shapes[output_neurons_max_index]->draw(cube_shader);
 
         //Normal vertices debug
         cube_shader_normals.runShader();
         cube_shader_normals.setMat4("projection", projection);
         cube_shader_normals.setMat4("view", view);
-        cube_shader_normals.setMat4("model", glm::translate(glm::mat4(1.0), cube->getPosition()));
-        cube->draw(cube_shader_normals);
+        shapes[output_neurons_max_index]->draw(cube_shader_normals);
 
-        //glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        //GLFW: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    //De-allocate all resources once they've outlived their purpose:
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
+    //De-allocate all resources once they've outlived their purpose
+    for (Shape* shape : shapes) {
+        delete shape;
+    }
 
     //GLFW: terminate, clearing all previously allocated GLFW resources.
     glfwTerminate();
-
-    delete cube;
-    delete pyramid;
+    
     return 0;
 }
 
