@@ -1,6 +1,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <getopt.h>
 
 #include "includes/shader.hpp"
 #include "includes/camera.hpp"
@@ -27,7 +28,17 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float prevFrame = 0.0f;
 
+//Argument parsing
+extern char *optarg;
+extern int optind, opterr, optopt;
+
 int main(int argc, char* argv[]) {
+    //Pass in the arguments
+    ImageClassifier img;
+    if (parse_arguments(argc, argv, &img)) {
+        return -1;
+    }
+
     //GLFW: initialize and configure
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -201,24 +212,63 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
 }
 
 //This function will need further improvements (current implementation is temporary for now)
+//Could use input file handling
 int parse_arguments(int argc, char* argv[], ImageClassifier* img_classifier) {
     if (argc < 2) {
         std::cerr << "Usage: " << argv[0] << " [options...] <input-file>\n";
         return -1;
     }
 
-    if (!strcmp(argv[1] , "-lw")) {
-        if (argc < 3) {
-            std::cerr << "'-lw' requires argument file name\n";
-            return -1;
+    int opt;
+    char *weightsFile = nullptr, *outputFile = nullptr;
+    bool canPropgate = false;
+
+    //If one were to pass '-l weights.data -t dataset/shapes.data', train_from_dataset_load_weights() and
+    //load_weights() together read and load the weights file twice. Not bothered right now to fix.
+    while ((opt = getopt(argc, argv, "l:t:o:")) != -1) {
+        switch (opt) {
+            case 'l':
+                img_classifier->load_weights(optarg);
+                weightsFile = optarg; canPropgate = true;
+                break;
+            case 't':
+                if (weightsFile) {
+                    printf("[+] Training network on loaded weights file '%s'\n", weightsFile);
+                    img_classifier->train_from_dataset_load_weights(optarg, weightsFile);
+                } else {
+                    printf("[+] Training network on randomized weights\n");
+                    img_classifier->train_from_dataset(optarg);
+                }
+                canPropgate = true;
+                break;
+            case 'o':
+                //img_classifier->save_weights(optarg);
+                outputFile = optarg;
+                break;
+            case '?':
+                std::cerr << "[-] Invalid option: " << (char)optopt << "\n";
+                return -1;
+            default:
+                abort();
         }
-        if (argc < 4) {
-            std::cerr << "Error: Please pass in an image to pass into the classifier...\n";
-            return -1;
-        }
-        img_classifier->load_weights(argv[2]);
-        img_classifier->forward_propagate_img(argv[3]);
     }
+
+    //Save file (via '-o' argument)
+    if (outputFile)
+        img_classifier->save_weights(outputFile);
+
+    //If input doesn't contain input file (input neurons from 28x28 file)
+    if (optind >= argc) {
+        std::cerr << "[!] No input file provided for forward pass... skipping..." << std::endl;
+        return -1;
+    }
+
+    //If no weights and neurons have been initialized
+    if (!canPropgate) {
+        std::cerr << "[-] Please provide arguments for the model to train on..." << std::endl;
+        return -1;
+    }
+    img_classifier->forward_propagate_img(argv[optind]);
 
     return 0;
 }
