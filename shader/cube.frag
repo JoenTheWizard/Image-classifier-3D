@@ -10,12 +10,12 @@ uniform vec3 playerPos;
 void main() {
 
     //Object properties
-    vec3 lightPos = vec3(1.2f, 1.0f, 2.0f);
+    vec3 lightPos = vec3(0.f, 0.f, 2.f);
     vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
     vec3 objectColor = vec3(1.0, 0.5, 0.31);
 
     //Ambient lighting
-    vec3 ambient = 0.1 * lightColor;
+    vec3 ambient = 0.4 * lightColor;
 
     //Diffusion lighting
     vec3 norm = normalize(Normals);
@@ -44,5 +44,5 @@ void main() {
     //Calculate total for Phong lighting
     vec3 result = (ambient + diffuse + specular) * objectColor;
 
-    FragColor = vec4(result,1);
+    FragColor = vec4(result, 1);
 }

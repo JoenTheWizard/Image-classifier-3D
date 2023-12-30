@@ -16,7 +16,7 @@ void main() {
     //Store the fragment positions
     FragPos = vec3(model * vec4(aPos, 1.0f));
     //Store the normals
-    Normals = aNormals;
+    Normals = mat3(transpose(inverse(model))) * aNormals;
 
     gl_Position = projection * view * model * vec4(aPos, 1.0f);
 }
