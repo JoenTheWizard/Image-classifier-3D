@@ -106,6 +106,8 @@ int main(int argc, char* argv[]) {
         cube_shader.setMat4("projection", projection);
         cube_shader.setMat4("view", view);
         cube_shader.setVec3("playerPos", camera.Position.x, camera.Position.y, camera.Position.z);
+        float angle = deltaTime * 45.f;
+        shapes[output_neurons_max_index]->rotate(angle, glm::vec3(0,1,0));
         shapes[output_neurons_max_index]->draw(cube_shader);
 
         //Normal vertices debug

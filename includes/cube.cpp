@@ -3,6 +3,9 @@
 Cube::Cube(float x, float y, float z) {
     position = glm::vec3(x,y,z);
 
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, position);
+
     float vertices[] = {
         //Position (X,Y,Z)    //Normal vectors
         -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
@@ -71,8 +74,6 @@ Cube::Cube(float x, float y, float z) {
 void Cube::draw(Shader& shader) {
     glBindVertexArray(VAO);
 
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, position);
     shader.setMat4("model", model);
 
     glDrawArrays(GL_TRIANGLES, 0, 36);

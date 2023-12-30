@@ -10,7 +10,8 @@ class Pyramid : public Shape {
 public:
     Pyramid(float x, float y, float z); //Initialize pyramid position (scalar values) 
     void draw(Shader& shader) override; //Draw pyramid with specified shader
-    void clean() override;
+    void rotate(float angle, glm::vec3 axis) override; //Rotate object in an angle
+    void clean() override; //Deallocate objects
 };
 
 #endif

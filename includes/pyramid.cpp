@@ -3,6 +3,9 @@
 Pyramid::Pyramid(float x, float y, float z) {
     position = glm::vec3(x,y,z);
 
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, position);
+
     float vertices[] = {
         //Positions (X,Y,Z)   //Normal vectors
          -0.5f, -0.5f, 0.0f,  0.0f, 0.447214f, 0.894427f,
@@ -58,13 +61,17 @@ Pyramid::Pyramid(float x, float y, float z) {
 void Pyramid::draw(Shader& shader) {
     glBindVertexArray(VAO);
 
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, position);
     shader.setMat4("model", model);
 
     glDrawArrays(GL_TRIANGLES, 0, 18);
     
     glBindVertexArray(0);
+}
+
+void Pyramid::rotate(float angle, glm::vec3 axis) {
+    model = glm::translate(model, glm::vec3(0.f,0.f,-0.5f));
+    model = glm::rotate(model, glm::radians(angle), axis);
+    model = glm::translate(model, glm::vec3(0.f,0.f,0.5f));
 }
 
 void Pyramid::clean() {
