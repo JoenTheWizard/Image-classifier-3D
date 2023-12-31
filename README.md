@@ -6,7 +6,7 @@ Initially, you can train the network from a dataset (with the valid number of in
 `./main <28x28-image> -t <dataset>`
 
 The file `dataset/shapes.data` can be used as an example. It was produced from the `ImageClassifier::create_dataset_from_dir()` from the images located in the `datset/` folder with the classifications in separate folders. After training you can save a file to disk containing binary data of the weights from each layer using:
-`./main <28x28-image> -t <dataset> -o <weights-file>
+`./main <28x28-image> -t <dataset> -o <weights-file>`
 
 The weights file can be reused for either a singular forward pass such as:
 `./main <28x28-image> -l <weights-file>`
