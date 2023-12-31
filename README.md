@@ -1,5 +1,5 @@
 # Image Classifier 3D
-An image classifier from a fully connected neural network implemented in C++. The neural network is implemented in C (in the `mlp_nn` folder). The classification then renders an object (from a predefined vertex array object) depending on the maximum output neuron index done from a forward propagation pass done from a 28x28 image.
+An image classifier from a fully connected neural network implemented in C++. The neural network is implemented in C (in the `mlp_nn` folder). The classification then renders an object (from a predefined vertex array object) depending on the maximum output neuron index done from a forward propagation pass done from a 28x28 image. As of now there are two classifications either a Cube or Pyramid.
 
 ## Usage
 Initially, you can train the network from a dataset (with the valid number of input and outputs, 784 input 2 output) and pass in a valid 28x28 image for a forward pass with the following:
