@@ -76,7 +76,9 @@ int main(int argc, char* argv[]) {
 
     //Build and compile our shader program
     Shader cube_shader("shader/cube.vert","shader/cube.frag");
+    #ifdef NORMVECTOR_DEBUG
     Shader cube_shader_normals("shader/cube_normals.vert","shader/cube_normals.frag", "shader/cube_normals.geom");
+    #endif
 
     //You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, 
     //but this rarely happens. Modifying other VAOs requires a call to glBindVertexArray anyways so we
@@ -110,11 +112,13 @@ int main(int argc, char* argv[]) {
         shapes[output_neurons_max_index]->rotate(angle, glm::vec3(0,1,0));
         shapes[output_neurons_max_index]->draw(cube_shader);
 
+        #ifdef NORMVECTOR_DEBUG
         //Normal vertices debug
         cube_shader_normals.runShader();
         cube_shader_normals.setMat4("projection", projection);
         cube_shader_normals.setMat4("view", view);
         shapes[output_neurons_max_index]->draw(cube_shader_normals);
+        #endif
 
         //GLFW: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
