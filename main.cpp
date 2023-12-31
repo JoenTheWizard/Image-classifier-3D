@@ -75,9 +75,9 @@ int main(int argc, char* argv[]) {
     shapes.push_back(new Pyramid(0.f,0.f,0.5f));
 
     //Build and compile our shader program
-    Shader cube_shader("shader/cube.vert","shader/cube.frag");
+    Shader cube_shader("shader/shape.vert","shader/shape.frag");
     #ifdef NORMVECTOR_DEBUG
-    Shader cube_shader_normals("shader/cube_normals.vert","shader/cube_normals.frag", "shader/cube_normals.geom");
+    Shader cube_shader_normals("shader/shape_normals.vert","shader/shape_normals.frag", "shader/shape_normals.geom");
     #endif
 
     //You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, 
