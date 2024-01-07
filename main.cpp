@@ -13,6 +13,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 int parse_arguments(int argc, char* argv[], ImageClassifier* img_classifier);
+void correct_network_ask(void);
 
 //Settings
 const unsigned int SCR_WIDTH = 1200;
@@ -32,7 +33,17 @@ float prevFrame = 0.0f;
 extern char *optarg;
 extern int optind, opterr, optopt;
 
+//Directories for classification and string to store the image specified for classification
+std::vector<std::string> directories;
+std::string input_image_path;
+
+//Ask the user if they want to append image to dataset at the end (for the correct_network_ask())
+bool ask_correct_me = false;
+
 int main(int argc, char* argv[]) {
+    //This is the directories for the classification (there are 2 as of now)
+    directories = {"dataset/cube", "dataset/pyramid"};
+
     //Pass in the arguments
     ImageClassifier img;
     if (parse_arguments(argc, argv, &img)) {
@@ -132,7 +143,10 @@ int main(int argc, char* argv[]) {
 
     //GLFW: terminate, clearing all previously allocated GLFW resources.
     glfwTerminate();
-    
+
+    //After terminating the window ask the user if the output result is correct    
+    if (ask_correct_me) correct_network_ask();
+
     return 0;
 }
 
@@ -197,7 +211,7 @@ int parse_arguments(int argc, char* argv[], ImageClassifier* img_classifier) {
 
     //If one were to pass '-l weights.data -t dataset/shapes.data', train_from_dataset_load_weights() and
     //load_weights() together read and load the weights file twice. Not bothered right now to fix.
-    while ((opt = getopt(argc, argv, "l:t:o:")) != -1) {
+    while ((opt = getopt(argc, argv, "l:t:o:c")) != -1) {
         switch (opt) {
             case 'l':
                 img_classifier->load_weights(optarg);
@@ -216,6 +230,9 @@ int parse_arguments(int argc, char* argv[], ImageClassifier* img_classifier) {
             case 'o':
                 //img_classifier->save_weights(optarg);
                 outputFile = optarg;
+                break;
+            case 'c':
+                ask_correct_me = true;
                 break;
             case '?':
                 std::cerr << "[-] Invalid option: " << (char)optopt << "\n";
@@ -241,6 +258,48 @@ int parse_arguments(int argc, char* argv[], ImageClassifier* img_classifier) {
         return -1;
     }
     img_classifier->forward_propagate_img(argv[optind]);
+    input_image_path = argv[optind];
 
     return 0;
+}
+
+//This is for appending the image into a dataset
+void correct_network_ask(void) {
+    std::cout << "[*] Would you like to append this image data to your dataset for further training? (y/n): ";
+    char response;
+    std::cin >> response;
+
+    //Input response to append image data to dataset
+    if (response == 'y' || response == 'Y') {
+        std::cout << "[*] Which set does this image belong to? (Select index): " << std::endl;
+        for(std::size_t i = 0; i < directories.size(); ++i) {
+            std::cout << i << ". " << directories[i] << std::endl;
+        }
+
+        //Select the index of which dataset classification the input image belongs to
+        int directoryIndex;
+        while (true) {
+            std::cout << "Index> "; std::cin >> directoryIndex;
+            if (std::cin.good() && directoryIndex >= 0 && directoryIndex < directories.size()) break;
+            else {
+                std::cin.clear(); std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cout << "[-] Please enter a valid index." << std::endl;
+            }
+        }
+
+        //Input the dataset to append the image
+        std::cout << "[*] Input the dataset path you want to append this image data to. (Input dataset path) " << std::endl;
+        std::string datasetPath;
+        while (true) {
+            std::cout << "Path> "; std::cin >> datasetPath;
+            if (std::filesystem::exists(datasetPath)) break;
+            else std::cout << "[-] Please enter a valid path." << std::endl;
+        }
+
+        std::cout << "[+] Appending '" << input_image_path << "' to dataset " << datasetPath <<
+                " with classification as " << directories[directoryIndex] << std::endl;
+
+        //Append the image to the dataset
+        ImageClassifier::append_img_to_dataset(datasetPath.c_str(), input_image_path.c_str(), directories, directoryIndex);
+    }
 }
