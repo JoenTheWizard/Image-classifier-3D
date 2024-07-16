@@ -24,7 +24,12 @@ Another feature is you can append the flattened input image data to a dataset wi
 
 `./main [options...] -c`
 
-**NOTE:** As of right now, there are no headers/extra metadata stored in the weights files so it doesn't check number of weight layers on the neural network when the file is loaded or saved and could cause issues when not properly checked. Also planning on making the neural network configurable via arguments (aka change number of epochs, learning rate, no. of hidden layer etc). Another note is that currently there is no check if the passed in image for the forward pass is a 28x28 image (might either make it return error or automatically resize image). Also note that the input image should only have 3 color channels (RGB) and image must be grayscaled.
+**NOTE:** 
+- As of right now, there are no headers/extra metadata stored in the weights files so it doesn't check number of weight layers on the neural network when the file is loaded or saved and could cause issues when not properly checked. 
+- Also planning on making the neural network configurable via arguments (aka change number of epochs, learning rate, no. of hidden layer, activation function etc). 
+- Another note is that currently there is no check if the passed in image for the forward pass is a 28x28 image (might either make it return error or automatically resize image). 
+- Also note that the input image should only have 3 color channels (RGB) and image must be grayscaled.
+- I have implemented one activation function (sigmod for forward and sigmoid derivative for backward pass) 
 
 # Todo
 - ~~Make the object classification (rendered to the OpenGL scene)~~
